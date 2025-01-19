@@ -1,0 +1,2 @@
+PowerShell Terminal :
+$env:Path += ";C:\Users\Elève\AppData\Roaming\Python\Python312\Scripts"
