@@ -187,3 +187,84 @@ prenoms = ["Noe", "Zachari", "Gaelle", "Theo"]
 dico_test = {k: v for k, v in enumerate(prenoms)}
 print(dico_test)
  """
+
+prenoms = ["Noe", "Zachari", "Gaelle", "Theo"]
+
+table_verite = [False, True, True]
+# all() returns True if all booleans are True or ints not 0
+print(all(table_verite))
+# any() returns True if at least one boolean is True or int not 0
+print(any(table_verite))
+
+# conversion function
+# variables : int(),  float(), str()
+# structure de données : dict(), list(), tuple(), set()
+# binaire : bin(), bytes(), hex()
+x = 10
+print(type(x))
+x = str(x)
+print(type(x))
+
+y = "15"
+print(type(y))
+y = int(y)
+print(type(y))
+
+liste_num = [0, 2, 3, 6, 84, -142]
+tuple_num = tuple(liste_num)
+print(tuple_num)
+
+liste_num2 = list(tuple_num)
+print(liste_num)
+
+dico = {"0": 5, "1": 6}
+print(type(dico.keys()))
+
+# input()
+# x = int(input("Entrez un nombre\n"))
+
+# format()
+x = 25
+ville = "Paris"
+message = f"Aujourd'hui, il fait {x} degrés à {ville}"
+print(message)
+
+parametres_neurones = {
+    "W1": np.random.randn(2, 4),
+    "b1": np.zeros((2, 1)),
+    "W2": np.random.randn(2, 2),
+    "b2": np.zeros((2, 1)),
+}
+
+for i in range(1, 3):
+    print("couche", i)
+    print(parametres_neurones[f"b{i}"])
+
+print("W2" + str(1))
+
+file = open("fichier.txt", "w")
+file.write("bonjour")
+file.close()
+
+file = open("fichier.txt", "r")
+file.read()
+file.close()
+
+# ou
+with open("fichier.txt", "r") as f:
+    f.read()
+    f.close()
+
+# exo open()
+
+with open("carres.txt", "w") as f:
+    for i in range(10):
+        f.write(f"{i}^2 = {i**2}\n")
+
+liste_txt = []
+
+with open("carres.txt", "r") as f:
+    for i in range(10):
+        liste_txt.append(f.readline().removesuffix("\n"))
+
+print(liste_txt)
