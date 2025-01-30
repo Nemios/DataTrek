@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 
 df = pd.read_csv(r"Data\Raw\student-depression-dataset.csv")
 
-
-"""
+""" 
 print(df.head())
 print(df.shape)
 print(df.dtypes)
@@ -14,26 +13,26 @@ gender = df["Gender"]
 print(gender)
 print(df[["Gender", "Age"]])
 
-#pandas aggregation
+# pandas aggregation
 print(df.groupby(["City", "Profession"]).agg({"Age": "mean", "Depression": "mean"}))
 
-#pandas merge dataframes
-print(pd.merge(df1,df2,on="student_id",how="inner"/"outer"/"left"/"right"))
+# pandas merge dataframes
+print(pd.merge(df1, df2, on="student_id", how="inner" / "outer" / "left" / "right"))
 
-#matplotlitb
+# matplotlitb
 Age = df["Age"]
 Depression = df["Depression"]
 plt.scatter(Age, Depression)
-#.scatter : nuage de points
-#.bar : diagramem en barres
-#.hist : histogramme ==> plt.hist(Age, bins=10,edgecolor="black")
-#.plot : courbe
+# .scatter : nuage de points
+# .bar : diagramem en barres
+# .hist : histogramme ==> plt.hist(Age, bins=10,edgecolor="black")
+# .plot : courbe
 plt.xlabel("Age")
 plt.ylabel("Depression")
 plt.title("Nuage de points Depression/Age")
 plt.show()
 
-#subplots :
+# subplots :
 plt.subplot(221)
 plt.scatter(Age, Depression)
 plt.xlabel("Age")
@@ -46,14 +45,17 @@ plt.subplot(223)
 ...
 plt.subplot(224)
 ...
-plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.05, hspace=0.5, wspace=0.5)
+plt.subplots_adjust(
+    top=0.92, bottom=0.08, left=0.10, right=0.05, hspace=0.5, wspace=0.5
+)
 plt.show()
-"""
+ """
 
 
+""" 
 villes = ["Paris", "Rome", "Londres", "Dublin", "Amsterdan", "Berlin"]
 num = [24, 45, 1, 17, 26]
-"""
+
 for index, ville in enumerate(villes):
     print(index, ville)
 
@@ -66,7 +68,6 @@ villes.sort()
 print(villes)
 num.sort(reverse=True)
 print(num)
-"""
 
 
 def fibo(n):
@@ -79,8 +80,7 @@ def fibo(n):
     print(liste)
 
 
-""" fibo(1000)
- """
+fibo(1000)
 dico = {"chien": 1, "chat": 2, "poule": 6, "cheval": 8}
 
 # pour le Deep Learning
@@ -92,7 +92,7 @@ parametres = {
     "B2": np.random.randn(10, 1),
 }
 
-""" 
+
 print(dico.keys())
 print(dico.values())
 print(len(dico))
@@ -136,13 +136,13 @@ def trier(classeur, nb):
 
 
 for i in liste_test_signe:
-    print(trier(classeur, i)) """
+    print(trier(classeur, i))
 
 # passer au carré les éléments d'une liste
 # méthode classique
 import time
 
-""" start = time.time()
+start = time.time()
 
 num2 = []
 for i in range(10000000):
@@ -157,8 +157,7 @@ num2_comprehension = [i**2 for i in range(10000000)]
 
 end = time.time()
 print(end - start)
- """
-""" # list comprehension dans une liste
+# list comprehension dans une liste
 liste1 = [[i + j for i in range(3)] for j in range(3)]
 print(liste1)
 
@@ -177,9 +176,14 @@ print(dico4)
 
 # tuple comprehension
 tuple1 = tuple((i**2 for i in range(10)))
-print(tuple1) """
-
+print(tuple1)
 
 # exo dico
 dico_exo = {k: k**2 for k in range(20)}
 print(dico_exo)
+
+prenoms = ["Noe", "Zachari", "Gaelle", "Theo"]
+
+dico_test = {k: v for k, v in enumerate(prenoms)}
+print(dico_test)
+ """
