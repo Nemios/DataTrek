@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+import time
 
 df = pd.read_csv(r"Data\Raw\student-depression-dataset.csv")
 
@@ -68,6 +70,7 @@ villes.sort()
 print(villes)
 num.sort(reverse=True)
 print(num)
+"""
 
 
 def fibo(n):
@@ -77,9 +80,10 @@ def fibo(n):
     while a < n:
         liste.append(a)
         a, b = b, b + a
-    print(liste)
+    return liste
 
 
+"""
 fibo(1000)
 dico = {"chien": 1, "chat": 2, "poule": 6, "cheval": 8}
 
@@ -124,6 +128,8 @@ liste_test_signe = [1, -5, 65, -158, 2, -69]
 
 classeur = {"positif": [], "negatif": []}
 
+"""
+
 
 def trier(classeur, nb):
     if nb > 0:
@@ -135,6 +141,7 @@ def trier(classeur, nb):
     return classeur
 
 
+"""
 for i in liste_test_signe:
     print(trier(classeur, i))
 
@@ -186,7 +193,6 @@ prenoms = ["Noe", "Zachari", "Gaelle", "Theo"]
 
 dico_test = {k: v for k, v in enumerate(prenoms)}
 print(dico_test)
- """
 
 prenoms = ["Noe", "Zachari", "Gaelle", "Theo"]
 
@@ -268,3 +274,48 @@ with open("carres.txt", "r") as f:
         liste_txt.append(f.readline().removesuffix("\n"))
 
 print(liste_txt)
+
+#correction
+with open("carres.txt","r") as f:
+    listetxt = f.read().splitlines()
+
+print(listetxt)
+ 
+#correction v2
+
+listetxt2 = [line.strip() for line in open("carres.txt", "r")]
+print(listetxt2)
+#################################################################################################
+PESQUET
+
+df.hist(bins=50, figsize=(10, 8))
+plt.show()
+"""
+# Compute pairwise correlations of attributes
+corr_matrix = df.corr(numeric_only=True)
+
+corr_matrix["Depression"].sort_values(ascending=False)
+
+
+def plot_correlation_matrix(df):
+    """Plot a correlation matrix for a DataFrame"""
+
+    # Select numerical columns
+    df_numerical = df.select_dtypes(include=[np.number])
+
+    plt.subplots()
+    sns.heatmap(
+        df.corr(numeric_only=True),
+        vmax=0.8,
+        linewidths=0.01,
+        square=True,
+        annot=True,
+        linecolor="white",
+        xticklabels=df_numerical.columns,
+        annot_kws={"size": 10},
+        yticklabels=df_numerical.columns,
+    )
+
+
+# plot_correlation_matrix(df)
+# plt.show()
