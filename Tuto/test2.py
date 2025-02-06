@@ -4,6 +4,8 @@ import random
 import statistics
 import os
 import glob
+import numpy as np
+import matplotlib.pyplot as plt
 
 """"
 liste = fibo(50)
@@ -54,9 +56,9 @@ for file in filenames:
         dico_files[file] = f.read()
 
 print(dico_files)
-"""
 
-import numpy as np
+
+
 
 tableau = np.array([1, 2, 3, 4])
 print(tableau.size)
@@ -97,7 +99,7 @@ A = A.squeeze()
 print(A.shape)
 # convertir un tab de dimension n en dimension 1 en mettant les elements à la suite
 print(D.ravel())
-
+"""
 
 # exo numpy random, reshape, concatenate
 
@@ -112,3 +114,58 @@ def initialisation(m, n):
 
 
 print(initialisation(3, 2))
+"""
+################################################################################################################
+# 11/30 Numpy Indexing Slicing Masking
+################################################################################################################
+# Indexing
+A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+print(A)
+print(A[1, 1])
+
+# Slicing
+print(A[:, 0])  # affichage tous les elements axe 1 (colonne)
+print(A[0, :])  # affichage tous les elements axe 0 (ligne)
+print(A[0])  # fonctionne aussi pour ligne
+# tableau dans A
+A1 = A[0:2, 0:2]
+print(A1)
+print(A1.shape)
+A[0:2, 0:2] = 10
+print(A)
+# exo
+A2 = A[:, -2:]
+print(A2)
+B = np.zeros((4, 4))
+print(B)
+B[1:3, 1:3] = 1
+print(B)
+C = np.zeros((5, 5))
+print(C)
+C[::2, ::2] = 1  # avec un pas mais pas tres utile en Data Science
+print(C)
+"""
+# BOOLEAN INDEXING, tres utile en Data Science
+A = np.random.randint(0, 10, [5, 5])
+print(A)
+A[(A < 5) & (A > 2)] = 10  # comme un Mask
+print(A)
+
+# exo mask image
+from scipy import misc
+
+face = misc.face(gray=True)
+# plt.imshow(face, cmap=plt.cm.gray)
+# plt.show()
+
+print(type(face))
+print(face.shape)
+
+a = face.shape[0]
+b = face.shape[1]
+
+face_quart = face[round(a / 8) : -round(a / 8), round(b / 8) : -round(b / 8)]
+face_quart[face_quart > 230] = 255
+face_quart[face_quart < 25] = 0
+plt.imshow(face_quart, cmap=plt.cm.gray)
+plt.show()
