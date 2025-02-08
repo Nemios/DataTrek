@@ -99,7 +99,7 @@ A = A.squeeze()
 print(A.shape)
 # convertir un tab de dimension n en dimension 1 en mettant les elements à la suite
 print(D.ravel())
-"""
+
 
 # exo numpy random, reshape, concatenate
 
@@ -114,7 +114,7 @@ def initialisation(m, n):
 
 
 print(initialisation(3, 2))
-"""
+
 ################################################################################################################
 # 11/30 Numpy Indexing Slicing Masking
 ################################################################################################################
@@ -144,7 +144,7 @@ C = np.zeros((5, 5))
 print(C)
 C[::2, ::2] = 1  # avec un pas mais pas tres utile en Data Science
 print(C)
-"""
+
 # BOOLEAN INDEXING, tres utile en Data Science
 A = np.random.randint(0, 10, [5, 5])
 print(A)
@@ -169,3 +169,64 @@ face_quart[face_quart > 230] = 255
 face_quart[face_quart < 25] = 0
 plt.imshow(face_quart, cmap=plt.cm.gray)
 plt.show()
+"""
+################################################################################################################
+# 12/30 Numpy Statistiques et Mathématiques
+################################################################################################################
+# doc Numpy ndarray
+# https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html
+np.random.seed(0)
+A = np.random.randint(0, 10, [2, 3])
+print(A)
+print(A.sum(axis=0))  # somme selon axe vertical
+print(
+    A.cumsum()
+)  # somme sur tous les elements en parcourant les éléments de chaque ligne
+
+print(A.prod())  # produit du tableau
+print(A.cumprod())  # produit du tableau
+
+print(A.min(axis=0))
+
+# Argmin Position du minimum
+print(A.argmin(axis=0))
+
+# Argsort trie le tableau et renvoie les index du tableau initial
+print(A[0].argsort())
+
+# Fonctions mathématiques ndarray
+# doc Numpy Fonctions mathématiques
+# https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.math.html
+print(np.exp(A))
+print(np.sinh(A))
+
+# Fonctions statistiques ndarray
+# doc Numpy Fonctions statistiques
+# https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.statistics.html
+print(A.mean())
+print(A.std())  # Ecart-type
+print(A.var())  # Variance
+print(np.corrcoef(A))  # matrice corrélations
+print(np.corrcoef(A)[0][1])  # coeff corrélation ligne 1 / ligne 2
+print(np.unique(A, return_counts=True))  # nb occurence elements
+B = np.random.randint(0, 10, [5, 5])
+print(np.unique(B, return_counts=True))
+
+# utilisation de Argsort avec np.unique
+values, counts = np.unique(B, return_counts=True)
+print(values[counts.argsort()])
+# mise en forme
+for i, j in zip(values[counts.argsort()], counts[counts.argsort()]):
+    print(f"le nombre {i} apparait {j} fois")
+
+# NAN corrections, manque de nombre ou nombre corrompu
+D = np.random.randn(5, 5)
+D[0, 2] = np.nan
+D[4, 3] = np.nan
+print(D)
+print(D.mean())  # marche pas comme tout le reste
+print(np.nanmean(D))
+print(np.nanvar(D))
+print(np.nanstd(D))
+print(np.isnan(D))
+print(np.isnan(D).sum())
