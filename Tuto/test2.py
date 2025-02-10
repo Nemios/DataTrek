@@ -164,12 +164,17 @@ print(face.shape)
 a = face.shape[0]
 b = face.shape[1]
 
-face_quart = face[round(a / 8) : -round(a / 8), round(b / 8) : -round(b / 8)]
-face_quart[face_quart > 230] = 255
+face_quart = face[a // 4 : -a // 4, b // 4 : -b // 4]
+face_quart[face_quart > 150] = 255
 face_quart[face_quart < 25] = 0
 plt.imshow(face_quart, cmap=plt.cm.gray)
 plt.show()
-"""
+
+# compression image
+face = face[::2, ::2]
+plt.imshow(face, cmap=plt.cm.gray)
+plt.show()
+
 ################################################################################################################
 # 12/30 Numpy Statistiques et Mathématiques
 ################################################################################################################
@@ -229,4 +234,35 @@ print(np.nanmean(D))
 print(np.nanvar(D))
 print(np.nanstd(D))
 print(np.isnan(D))
-print(np.isnan(D).sum())
+print(np.isnan(D).sum() / A.size)  # rapport Nan / taille
+D[np.isnan(D)] = 0  # suppression nan
+print(D)
+
+
+# Fonctions algèbre linéaire ndarray
+# doc Numpy Fonctions algèbre linéaire
+# https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.linalg.html
+A = np.ones((2, 3))
+B = np.ones((3, 2))
+print(f"A = {A}")
+print(f"B = {B}")
+print(A.T)  # transposée
+print(A.dot(B))  # produit matriciel
+C = np.random.randint(0, 10, [3, 3])
+print(np.linalg.det(C))  # déterminant d'une matrice carrée
+print(np.linalg.inv(C))  # inversion d'une matrice carrée
+
+# pas tout le temps utilisable avec dataset car souvent colonne colinéaire
+# on peut utiliser une pseudo inverse
+print(np.linalg.pinv(C))
+
+print(np.linalg.eig(C))  # valeurs propres, vecteurs propres
+"""
+
+# exo numpy stats et maths
+np.random.seed(0)
+A = np.random.randint(0, 100, [10, 5])
+print(A[:, 0])
+for j in range(A.shape[1]):
+    A[:, j] = (A[:, j] - A[:, j].mean()) / A[:, j].std()
+print(A)
