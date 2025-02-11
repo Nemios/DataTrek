@@ -257,12 +257,78 @@ print(np.linalg.inv(C))  # inversion d'une matrice carrée
 print(np.linalg.pinv(C))
 
 print(np.linalg.eig(C))  # valeurs propres, vecteurs propres
-"""
 
 # exo numpy stats et maths
 np.random.seed(0)
 A = np.random.randint(0, 100, [10, 5])
-print(A[:, 0])
-for j in range(A.shape[1]):
-    A[:, j] = (A[:, j] - A[:, j].mean()) / A[:, j].std()
 print(A)
+D = (A - A.mean(axis=0)) / A.std(axis=0)
+print(D)
+print(D.mean(axis=0))
+print(D.std(axis=0))
+################################################################################################################
+# 13/30 Numpy Broadcasting : étendre les dimensions d'un tableau
+################################################################################################################
+
+np.random.seed(0)
+A = np.random.randint(0, 10, [2, 3])
+B = np.ones((2, 3))
+C = np.ones((2, 2))
+D = np.ones((2, 1))
+E = np.ones((3, 1))
+print(A)
+print(B)
+print(A + B)  # fonctionne car mm dimension
+# print(A + C)  # ne fonctionne pas car broadcasting impossible
+print(A + D)  # fonctionne car broadcasting possible
+# print(A + E)  # ne fonctionne pas car broadcasting impossible
+
+# règle Broadcasting :
+# A et B dimensions égales ou égales à 1
+
+# exo A 4x1 et B 1x3
+A = np.random.randint(0, 10, [4, 1])
+B = np.random.randint(0, 10, [1, 3])
+print(A)
+print(B)
+print(A + B)
+
+# ATTENTION dimension (n,) ==> reshape obligatoire
+# A.reshape(A.shape[0],1)
+"""
+
+##################################################################################
+# Bilan Numpy Machine Learning
+##################################################################################
+
+# axis 0 le long des lignes
+# axis 1 le long des colonnes
+
+# Attributs utiles :
+# A.shape : tuple (non modifiable)
+# A.size : list
+
+# Constructeurs :
+# np.array(objet, dtype)
+# np.zeros((shape), dtype)
+# np.ones((shape), dtype)
+# np.random.randn(lignes, colonnes)
+
+# Manipulation :
+# A.reshape((shape))
+# A.ravel() #convertir en 1 ligne avec tous les éléments à la suite
+# A.concatenate(axis) assembler 2 tableaux ensemble
+
+# Méthodes utiles :
+# A.min(axis)
+# A.max(axis)
+# A.sum(axis)
+# A.mean(axis)
+# A.std(axis)
+
+# A.argmin(axis) renvoie les index des éléments du tableau initial triés
+# A.argmax(axis)
+# A.argsort(axis)
+
+# Boolean indexing :
+# A[A<10]
