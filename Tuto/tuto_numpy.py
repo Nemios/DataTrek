@@ -326,7 +326,7 @@ print(A + B)
 # A.mean(axis)
 # A.std(axis)
 
-# A.argmin(axis) renvoie les index des éléments du tableau initial triés
+# A.argmin(axis) renvoie les index triés des éléments du tableau initial
 # A.argmax(axis)
 # A.argsort(axis)
 
