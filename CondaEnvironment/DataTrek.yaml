@@ -26,7 +26,7 @@ dependencies:
   - ca-certificates=2025.1.31=h56e8100_0
   - cached-property=1.5.2=hd8ed1ab_1
   - cached_property=1.5.2=pyha770c72_1
-  - certifi=2024.12.14=pyhd8ed1ab_0
+  - certifi=2025.1.31=py312haa95532_0
   - cffi=1.17.1=py312h4389bb4_0
   - charset-normalizer=3.4.1=pyhd8ed1ab_0
   - colorama=0.4.6=pyhd8ed1ab_1
@@ -194,6 +194,7 @@ dependencies:
   - wheel=0.44.0=py312haa95532_0
   - win_inet_pton=1.1.0=pyh7428d3b_8
   - winpty=0.4.3=4
+  - xlrd=2.0.1=pyhd3eb1b0_1
   - xz=5.4.6=h8cc25b3_1
   - yaml=0.2.5=h8ffe710_2
   - zeromq=4.3.5=he0c23c2_3
