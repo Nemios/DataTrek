@@ -89,8 +89,39 @@ for i in range(1, 5):
 print(dico_age) """
 
 # correction
+data.loc[data["age"] <= 20, "age"] = 0
+data.loc[(data["age"] > 20) & (data["age"] <= 30)] = 1
+data.loc[(data["age"] > 30) & (data["age"] <= 40)] = 2
+data.loc[data["age"] > 40] = 3
+print(data["age"].value_counts())
+print(data.groupby(["age"]).mean())
+
+# fonction .map() pour appliquer une fonction sur chaque élément d'une colonne
+data["age"].map(lambda x: x + 1)
 
 
+def category_ages(age):
+    if age <= 20:
+        return "< 20 ans"
+    elif (age > 20) & (age <= 30):
+        return "20-30 ans"
+    elif (age > 30) & (age <= 40):
+        return "30-40 ans"
+    else:
+        return "+ 40 ans"
+
+
+data["age"].map(category_ages)
+
+# fonction .apply() pour appliquer une fonction sur chaque élément du DataFrame
+
+# Conversion en données numériques pour faire des calculs
+# méthode .map()
+data["sex"].map({"male": 0, "female": 1})
+# méthode .replace()
+data["sex"].replace(["male", "female"], [0, 1])
+# méthode .astype("category").cat.codes
+data["sex"].astype("category").cat.codes
 ###############################################################
 # 18/30 Pandas Time Series
 ###############################################################
