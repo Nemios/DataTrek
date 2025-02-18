@@ -5,7 +5,7 @@ import pandas as pd
 ###############################################################
 # 17/30 Intro + Titanic
 ###############################################################
-data = pd.read_excel(r"C:\Users\baudo\Desktop\DataTrek\titanic3.xls")
+data = pd.read_excel(r"Tuto\titanic3.xls")
 """
 print(data.shape)
 print(data.columns)
@@ -54,7 +54,8 @@ print(data.groupby(["sex", "pclass"]).mean())
 # une série = une colonne value et une colonne index
 # on peut chosir d'indexer sur les noms par exemple plutot que sur des numéros
 """
-# data = pd.read_excel(r"C:\Users\baudo\Desktop\DataTrek\titanic3.xls")
+data = pd.read_excel(r"Tuto\titanic3.xls")
+print(data.index)
 # data = data.set_index("name")
 # print(data["age"])
 """
@@ -86,7 +87,7 @@ for i in range(1, 5):
     else:
         dico_age[f"Cat{i-1}"] = data[data["age"] > 10 * i]
 
-print(dico_age) """
+print(dico_age) 
 
 # correction
 data.loc[data["age"] <= 20, "age"] = 0
@@ -122,14 +123,18 @@ data["sex"].map({"male": 0, "female": 1})
 data["sex"].replace(["male", "female"], [0, 1])
 # méthode .astype("category").cat.codes
 data["sex"].astype("category").cat.codes
+"""
 ###############################################################
 # 18/30 Pandas Time Series
 ###############################################################
 
 bitcoin = pd.read_csv(
-    r"C:\Users\baudo\Desktop\DataTrek\aapl_us_d.csv", index_col="Date", parse_dates=True
+    r"Tuto\aapl_us_d.csv",
+    index_col="Date",
+    parse_dates=True,
 )
-""" print(bitcoin.head())
+"""
+print(bitcoin.head())
 print(bitcoin.index)
 
 plt.figure()
@@ -179,9 +184,7 @@ plt.legend()
 plt.show() """
 
 # Fusionner plusieurs Datasets
-ethereum = pd.read_csv(
-    r"C:\Users\baudo\Desktop\DataTrek\aapl_us_d.csv", index_col="Date", parse_dates=True
-)
+ethereum = pd.read_csv(r"Tuto\aapl_us_d.csv", index_col="Date", parse_dates=True)
 """
 btc_eth = pd.merge(bitcoin, ethereum, on="Date", how="inner", suffixes=("_btc", "_eth"))
 # inner = assemblage sur index en commun, si un dataframe en a en dehors les données sont perdues
