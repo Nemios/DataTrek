@@ -96,7 +96,7 @@ plt.show() """
 ###############################################################
 # Classification
 ###############################################################
-titanic = sns.load_dataset("titanic")
+""" titanic = sns.load_dataset("titanic")
 print(titanic.shape)
 print(titanic.head())
 
@@ -145,4 +145,98 @@ for i in range(1, 11):
         n = i
         highscore = score
 
-print((n, highscore))
+print((n, highscore)) """
+
+######################################################################################
+# 21/30 SKLearn :  MODEL SELECTION : Train_test_split, Cross Validation, GridSearchCV
+######################################################################################
+# ON NE VALIDE JAMAIS UN MODELE AVEC LES DONNEES D'ENTRAINEMENT
+# on fait des Xtrain, Ytrain pour model.fit() et Xtest, Ytest pour model.score()
+
+# exemple avec iris
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+print(X.shape)
+plt.figure()
+plt.scatter(X[:, 0], X[:, 1], c=y, alpha=0.8)
+plt.show()
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+# test_size = % de données pour les tests
+print("Train set:", X_train.shape)
+print("Test set:", X_test.shape)
+
+plt.figure()
+plt.subplot(1, 2, 1)
+plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, alpha=0.8)
+plt.title("Train set")
+plt.subplot(1, 2, 2)
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, alpha=0.8)
+plt.title("Test set")
+plt.show()
+
+from sklearn.neighbors import KNeighborsClassifier
+
+model = KNeighborsClassifier(n_neighbors=1)
+
+model.fit(X_train, y_train)
+print("Train score:", model.score(X_train, y_train))
+# score de 100% car test sur données entrainement
+
+print("Test score:", model.score(X_test, y_test))
+
+# ATTENTION : si on optimise les hyperparametres directement en regardant le score du test set
+# on ne pourra plus l'utiliser ensuite
+# on découpe donc le dataset en train-validation-test sets
+# comme ça on regarde le meilleur des modeles pour validation set et on ne teste que ce modele
+# avec le test set
+
+# mais comment savoir si le dataset a été découpé de la bonne façon ?
+
+# ==>
+
+###############################################
+# Cross-Validation
+###############################################
+# le modele est découpé en n splits
+# on test les n cas ou le validation set est en i-eme position
+
+from sklearn.model_selection import cross_val_score
+
+result = cross_val_score(
+    KNeighborsClassifier(), X_train, y_train, cv=5, scoring="accuracy"
+)
+# cv = nb de splits dans le modele
+print(result)
+print("moyenne des resultats:", result.mean())
+
+# maintenant on veut trouver les meilleurs hyperparametres
+
+#########################################################
+# Validation Curve - optimisation d'un hyperparametre
+#########################################################
+from sklearn.model_selection import validation_curve
+
+model = KNeighborsClassifier()
+k = np.arange(1, 50)
+
+train_score, val_score = validation_curve(
+    model, X_train, y_train, param_name="n_neighbors", param_range=k, cv=5
+)
+
+# "n_neighbors" = nom de l'hyperparametre qu'on veut régler
+
+plt.figure()
+plt.plot(k, val_score.mean(axis=1))
+plt.show()
+
+#########################################################
+# GridSearchCV - optimisation d'un hyperparametre
+#########################################################
