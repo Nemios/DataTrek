@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 ###############################################################
 # 20/30 SKLearn : KNN, LinearRegression et SUPERVISED LEARNING
@@ -44,7 +46,7 @@ import matplotlib.pyplot as plt
 ###############################################################
 # Régression
 ###############################################################
-np.random.seed(0)
+""" np.random.seed(0)
 m = 100  # creating 100 samples
 X = np.linspace(0, 10, m).reshape(m, 1)
 y = X + np.random.randn(m, 1)
@@ -89,8 +91,58 @@ predictions = model.predict(X)
 plt.figure()
 plt.scatter(X, y)
 plt.plot(X, predictions, c="r")
-plt.show()
+plt.show() """
 
 ###############################################################
 # Classification
 ###############################################################
+titanic = sns.load_dataset("titanic")
+print(titanic.shape)
+print(titanic.head())
+
+titanic = titanic[["survived", "pclass", "sex", "age"]]
+titanic.dropna(axis=0, inplace=True)
+titanic.loc[:, "sex"] = titanic["sex"].replace(["male", "female"], [0, 1])
+print(titanic.head())
+
+from sklearn.neighbors import KNeighborsClassifier
+
+model = KNeighborsClassifier()
+
+# dissocier label/target y du tableau
+y = titanic.loc[:, "survived"]
+print(y.head())
+X = titanic.drop("survived", axis=1)
+print(X.head())
+
+# entrainement, test, validation
+model.fit(X, y)
+print(model.score(X, y))
+predictions = model.predict(X)
+print(predictions)
+
+
+# fonction pour savoir si on aurait survécu à la catastrophe du titanic
+def survie(model, pclass=3, sex=0, age=21):
+    x = pd.DataFrame([[pclass, sex, age]], columns=X.columns)
+    print(model.predict(x))
+    # proba appartenance classe 0 ou 1
+    # ATTENTION : méhode pas dispo pour tous les estimateurs
+    print(model.predict_proba(x))
+
+
+survie(model)
+
+# exo
+n = 0
+highscore = 0
+for i in range(1, 11):
+    model = KNeighborsClassifier(n_neighbors=i)
+    model.fit(X, y)
+    score = model.score(X, y)
+    print(score)
+    if score > n:
+        n = i
+        highscore = score
+
+print((n, highscore))
