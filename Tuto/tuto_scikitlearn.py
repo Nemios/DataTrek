@@ -145,8 +145,8 @@ for i in range(1, 11):
         n = i
         highscore = score
 
-print((n, highscore)) """
-
+print((n, highscore))
+ """
 ######################################################################################
 # 21/30 SKLearn :  MODEL SELECTION : Train_test_split, Cross Validation, GridSearchCV
 ######################################################################################
@@ -240,3 +240,43 @@ plt.show()
 #########################################################
 # GridSearchCV - optimisation d'un hyperparametre
 #########################################################
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {"n_neighbors": np.arange(1, 20), "metric": ["euclidean", "manhattan"]}
+grid = GridSearchCV(KNeighborsClassifier(), param_grid, cv=5)
+grid.fit(X_train, y_train)
+
+print(grid.best_score_)  # meilleur score
+
+print(grid.best_params_)  # meilleur parametres
+
+model = grid.best_estimator_  # meilleur modele
+
+print(model.score(X_test, y_test))
+
+# Confusion matrix
+from sklearn.metrics import confusion_matrix
+
+print(confusion_matrix(y_test, model.predict(X_test)))
+# la matrice montre que parmi les éléments de la classe 3, un élément a été classé dans la classe 2
+
+#################################################################################################
+# Learning curve - évolution des performances du modele en fonction quantité données fournie
+#################################################################################################
+# performance finit toujours par plafonner donc on arrete de collecter des donnees si cela
+# n'apporte plus rien au modele
+from sklearn.model_selection import learning_curve
+
+N, train_score, val_score = learning_curve(
+    model, X_train, y_train, train_sizes=np.linspace(0.1, 1.0, 10), cv=5
+)
+print(N)
+
+plt.figure()
+plt.plot(N, train_score.mean(axis=1), label="train")
+plt.plot(N, val_score.mean(axis=1), label="validation")
+plt.xlabel("train_sizes")
+plt.legend()
+plt.show()
+
+# exo Titanic avec model Selection
