@@ -154,7 +154,7 @@ print((n, highscore))
 # on fait des Xtrain, Ytrain pour model.fit() et Xtest, Ytest pour model.score()
 
 # exemple avec iris
-from sklearn.datasets import load_iris
+""" from sklearn.datasets import load_iris
 
 iris = load_iris()
 
@@ -277,6 +277,126 @@ plt.plot(N, train_score.mean(axis=1), label="train")
 plt.plot(N, val_score.mean(axis=1), label="validation")
 plt.xlabel("train_sizes")
 plt.legend()
-plt.show()
+plt.show() """
 
 # exo Titanic avec model Selection
+
+titanic = sns.load_dataset("titanic")
+
+titanic = titanic[["survived", "pclass", "sex", "age"]]
+titanic.dropna(axis=0, inplace=True)
+titanic.loc[:, "sex"] = titanic["sex"].replace(["male", "female"], [0, 1])
+print(titanic.head())
+
+from sklearn.neighbors import KNeighborsClassifier
+
+
+# dissocier label/target y du tableau
+y = titanic.loc[:, "survived"]
+print(y.head())
+X = titanic.drop("survived", axis=1)
+print(X.head())
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+# test_size = % de données pour les tests
+print("Train set:", X_train.shape)
+print("Test set:", X_test.shape)
+
+from sklearn.neighbors import KNeighborsClassifier
+
+model = KNeighborsClassifier(n_neighbors=1)
+
+model.fit(X_train, y_train)
+print("Train score:", model.score(X_train, y_train))
+# score de 100% car test sur données entrainement
+
+print("Test score:", model.score(X_test, y_test))
+
+# ATTENTION : si on optimise les hyperparametres directement en regardant le score du test set
+# on ne pourra plus l'utiliser ensuite
+# on découpe donc le dataset en train-validation-test sets
+# comme ça on regarde le meilleur des modeles pour validation set et on ne teste que ce modele
+# avec le test set
+
+# mais comment savoir si le dataset a été découpé de la bonne façon ?
+
+# ==>
+
+###############################################
+# Cross-Validation
+###############################################
+# le modele est découpé en n splits
+# on test les n cas ou le validation set est en i-eme position
+
+from sklearn.model_selection import cross_val_score
+
+result = cross_val_score(
+    KNeighborsClassifier(), X_train, y_train, cv=5, scoring="accuracy"
+)
+# cv = nb de splits dans le modele
+print(result)
+print("moyenne des resultats:", result.mean())
+
+# maintenant on veut trouver les meilleurs hyperparametres
+
+#########################################################
+# Validation Curve - optimisation d'un hyperparametre
+#########################################################
+from sklearn.model_selection import validation_curve
+
+model = KNeighborsClassifier()
+k = np.arange(1, 50)
+
+train_score, val_score = validation_curve(
+    model, X_train, y_train, param_name="n_neighbors", param_range=k, cv=5
+)
+
+# "n_neighbors" = nom de l'hyperparametre qu'on veut régler
+
+plt.figure()
+plt.plot(k, val_score.mean(axis=1))
+plt.show()
+
+#########################################################
+# GridSearchCV - optimisation d'un hyperparametre
+#########################################################
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {"n_neighbors": np.arange(1, 20), "metric": ["euclidean", "manhattan"]}
+grid = GridSearchCV(KNeighborsClassifier(), param_grid, cv=5)
+grid.fit(X_train, y_train)
+
+print(grid.best_score_)  # meilleur score
+
+print(grid.best_params_)  # meilleur parametres
+
+model = grid.best_estimator_  # meilleur modele
+
+print(model.score(X_test, y_test))
+
+# Confusion matrix
+from sklearn.metrics import confusion_matrix
+
+print(confusion_matrix(y_test, model.predict(X_test)))
+# la matrice montre que parmi les éléments de la classe 3, un élément a été classé dans la classe 2
+
+#################################################################################################
+# Learning curve - évolution des performances du modele en fonction quantité données fournie
+#################################################################################################
+# performance finit toujours par plafonner donc on arrete de collecter des donnees si cela
+# n'apporte plus rien au modele
+from sklearn.model_selection import learning_curve
+
+N, train_score, val_score = learning_curve(
+    model, X_train, y_train, train_sizes=np.linspace(0.1, 1.0, 10), cv=5
+)
+print(N)
+
+plt.figure()
+plt.plot(N, train_score.mean(axis=1), label="train")
+plt.plot(N, val_score.mean(axis=1), label="validation")
+plt.xlabel("train_sizes")
+plt.legend()
+plt.show()
