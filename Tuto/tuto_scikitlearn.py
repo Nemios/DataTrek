@@ -205,15 +205,52 @@ print("Test score:", model.score(X_test, y_test))
 ###############################################
 # Cross-Validation
 ###############################################
+# Cross validation inutile en DeepLearning
 # le modele est découpé en n splits
 # on test les n cas ou le validation set est en i-eme position
+# on peut utiliser la méthode KFold (tres utile pour regression) LeaveOneOut (tres couteuse en calcul), 
+# ou ShuffleSplit (on mélange, le train set et le validation set avant de les séparer, on valide et on recommence)
 
 from sklearn.model_selection import cross_val_score
 
 result = cross_val_score(
     KNeighborsClassifier(), X_train, y_train, cv=5, scoring="accuracy"
 )
-# cv = nb de splits dans le modele
+# cv (cross validation) = nb de splits dans le modele si juste un entier
+
+
+######################## pour aller plus loin #################################################
+# on peut aussi faire
+from sklearn.model_selection import KFold, LeaveOneOut, ShuffleSplit
+cv1 = KFold(5, random_state=0) # random_state pour définir seed
+cv2 = LeaveOneOut()
+cv3 = ShuffleSplit(4, test_size=0.2) # 4=nb splits et test_size = 20% en validation, 80% en train
+
+# on utilise la méthode StratifiedKFold quand les classes sont déséquilibrées
+# cela consiste à séparer les stratas (classes) ex: a survécu / est mort
+# ensuite on divise les stratas en un certains nombre de groupe (le meme) par exemple 4 (survécu1, survécu2,..., mort1, mort2,...)
+# on réassemble en 4 splits (survécu1mort1, survécu2mort2,...)
+# on a donc 4 splits avec les memes proportions de strata 1 et 2 dans chaque, on évite de se retrouver avec des splits où manque un strata
+from sklearn.model_selection import StratifiedKFold
+cv4 = StratifiedKFold(4)
+
+# on utilise la méthode Group KFold quand il y a dépendances entre des variables
+# ie des groupes qui représentent un facteur d'influence
+# ex : on regarde le cancer pour une meme famille, si il y a bcp de cancer alors on va considerer un risque genetique
+# on separe en groupe : on fait des tas de cartes en fonction des familles (coeur, trefle, pique, carreau)
+# on fait des splits dans chaque famille ex :4
+# on assemble 4 splits (un de chaque famille) pour constituer le validation set
+# on rassemble le reste pour former le train set
+# on recommence en reprenant les 4 splits (ie 16 au total) et on réassemble 4 splits (un de chaque famille)
+# jusqu'à tester toutes les combinaisons
+from sklearn.model_selection import GroupKFold
+cv5 = GroupKFold(5).get_n_splits(X, y, groups=X[:,0]) #groups pour titanic : les gens en pclass 1 sont dans le groupe 1, les gens dans en pclass2 dans le groupe 2
+
+result = cross_val_score(
+    KNeighborsClassifier(), X, y, cv=cv1,2,3,4 ou 5, scoring="accuracy"
+)
+##################################### fin de la parenthèse ##################################################
+
 print(result)
 print("moyenne des resultats:", result.mean())
 
