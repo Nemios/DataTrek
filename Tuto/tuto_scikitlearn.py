@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+import os
+import psutil
+
+os.environ["LOKY_MAX_CPU_COUNT"] = str(
+    psutil.cpu_count(logical=False)
+)  # Nombre de cœurs physiques
+
+
 ###############################################################
 # 20/30 SKLearn : KNN, LinearRegression et SUPERVISED LEARNING
 ###############################################################
@@ -52,6 +60,9 @@ X = np.linspace(0, 10, m).reshape(m, 1)
 y = X + np.random.randn(m, 1)
 
 plt.figure()
+plt.title("Données de Régression Linéaire")
+plt.xlabel("X")
+plt.ylabel("y")
 plt.scatter(X, y)
 
 from sklearn.linear_model import LinearRegression
@@ -66,7 +77,13 @@ predictions = model.predict(X)
 print(predictions)
 
 
-plt.plot(X, predictions, c="r")
+plt.figure()
+plt.scatter(X, y)
+plt.plot(X, predictions, c="r", label="Régression Linéaire")
+plt.title("Régression Linéaire")
+plt.xlabel("X")
+plt.ylabel("y")
+plt.legend()
 plt.show()
 
 # Si pblm non linéaire :
@@ -77,7 +94,11 @@ model2.score(X, y2)
 predictions2 = model2.predict(X)
 plt.figure()
 plt.scatter(X, y2)
-plt.plot(X, predictions2, c="r")
+plt.plot(X, predictions2, c="r", label="Modèle Linéaire sur Données Quadratiques")
+plt.title("Régression Non Linéaire")
+plt.xlabel("X")
+plt.ylabel("y")
+plt.legend()
 plt.show()
 
 # pas le bon estimateur, il faut changer par exemple avec un modèle de Support Vector Machine (SVM)
@@ -90,9 +111,13 @@ model.score(X, y)
 predictions = model.predict(X)
 plt.figure()
 plt.scatter(X, y)
-plt.plot(X, predictions, c="r")
-plt.show() """
-
+plt.plot(X, predictions, c="r", label="SVM Regression")
+plt.title("Support Vector Regression")
+plt.xlabel("X")
+plt.ylabel("y")
+plt.legend()
+plt.show()
+ """
 ###############################################################
 # Classification
 ###############################################################
@@ -123,7 +148,7 @@ print(predictions)
 
 
 # fonction pour savoir si on aurait survécu à la catastrophe du titanic
-def survie(model, pclass=3, sex=0, age=21):
+def survie(model, pclass=3, sex=0, age=25):
     x = pd.DataFrame([[pclass, sex, age]], columns=X.columns)
     print(model.predict(x))
     # proba appartenance classe 0 ou 1
@@ -154,7 +179,7 @@ print((n, highscore))
 # on fait des Xtrain, Ytrain pour model.fit() et Xtest, Ytest pour model.score()
 
 # exemple avec iris
-""" from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris
 
 iris = load_iris()
 
@@ -164,6 +189,9 @@ y = iris.target
 print(X.shape)
 plt.figure()
 plt.scatter(X[:, 0], X[:, 1], c=y, alpha=0.8)
+plt.title("Données Iris : Caractéristiques vs Labels")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
 plt.show()
 
 from sklearn.model_selection import train_test_split
@@ -173,13 +201,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 print("Train set:", X_train.shape)
 print("Test set:", X_test.shape)
 
-plt.figure()
+plt.figure(figsize=(10, 4))
 plt.subplot(1, 2, 1)
 plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, alpha=0.8)
-plt.title("Train set")
+plt.title("Train Set")
 plt.subplot(1, 2, 2)
 plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, alpha=0.8)
-plt.title("Test set")
+plt.title("Test Set")
 plt.show()
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -208,7 +236,7 @@ print("Test score:", model.score(X_test, y_test))
 # Cross validation inutile en DeepLearning
 # le modele est découpé en n splits
 # on test les n cas ou le validation set est en i-eme position
-# on peut utiliser la méthode KFold (tres utile pour regression) LeaveOneOut (tres couteuse en calcul), 
+# on peut utiliser la méthode KFold (tres utile pour regression) LeaveOneOut (tres couteuse en calcul),
 # ou ShuffleSplit (on mélange, le train set et le validation set avant de les séparer, on valide et on recommence)
 
 from sklearn.model_selection import cross_val_score
@@ -221,10 +249,14 @@ result = cross_val_score(
 
 ######################## pour aller plus loin #################################################
 # on peut aussi faire
+
 from sklearn.model_selection import KFold, LeaveOneOut, ShuffleSplit
-cv1 = KFold(5, random_state=0) # random_state pour définir seed
+
+cv1 = KFold(n_splits=5, shuffle=True, random_state=0)  # random_state pour définir seed
 cv2 = LeaveOneOut()
-cv3 = ShuffleSplit(4, test_size=0.2) # 4=nb splits et test_size = 20% en validation, 80% en train
+cv3 = ShuffleSplit(
+    4, test_size=0.2
+)  # 4=nb splits et test_size = 20% en validation, 80% en train
 
 # on utilise la méthode StratifiedKFold quand les classes sont déséquilibrées
 # cela consiste à séparer les stratas (classes) ex: a survécu / est mort
@@ -232,6 +264,7 @@ cv3 = ShuffleSplit(4, test_size=0.2) # 4=nb splits et test_size = 20% en validat
 # on réassemble en 4 splits (survécu1mort1, survécu2mort2,...)
 # on a donc 4 splits avec les memes proportions de strata 1 et 2 dans chaque, on évite de se retrouver avec des splits où manque un strata
 from sklearn.model_selection import StratifiedKFold
+
 cv4 = StratifiedKFold(4)
 
 # on utilise la méthode Group KFold quand il y a dépendances entre des variables
@@ -244,11 +277,12 @@ cv4 = StratifiedKFold(4)
 # on recommence en reprenant les 4 splits (ie 16 au total) et on réassemble 4 splits (un de chaque famille)
 # jusqu'à tester toutes les combinaisons
 from sklearn.model_selection import GroupKFold
-cv5 = GroupKFold(5).get_n_splits(X, y, groups=X[:,0]) #groups pour titanic : les gens en pclass 1 sont dans le groupe 1, les gens dans en pclass2 dans le groupe 2
 
-result = cross_val_score(
-    KNeighborsClassifier(), X, y, cv=cv1,2,3,4 ou 5, scoring="accuracy"
-)
+cv5 = GroupKFold(5).get_n_splits(
+    X, y, groups=X[:, 0]
+)  # groups pour titanic : les gens en pclass 1 sont dans le groupe 1, les gens dans en pclass2 dans le groupe 2
+
+result = cross_val_score(KNeighborsClassifier(), X, y, cv=cv1, scoring="accuracy")
 ##################################### fin de la parenthèse ##################################################
 
 print(result)
@@ -272,6 +306,9 @@ train_score, val_score = validation_curve(
 
 plt.figure()
 plt.plot(k, val_score.mean(axis=1))
+plt.title("Validation Curve - Nombre de Voisins")
+plt.xlabel("Nombre de voisins")
+plt.ylabel("Score de validation")
 plt.show()
 
 #########################################################
@@ -310,11 +347,13 @@ N, train_score, val_score = learning_curve(
 print(N)
 
 plt.figure()
-plt.plot(N, train_score.mean(axis=1), label="train")
-plt.plot(N, val_score.mean(axis=1), label="validation")
-plt.xlabel("train_sizes")
+plt.plot(N, train_score.mean(axis=1), label="Train")
+plt.plot(N, val_score.mean(axis=1), label="Validation")
+plt.xlabel("Taille de l'échantillon d'entraînement")
+plt.ylabel("Score")
+plt.title("Learning Curve")
 plt.legend()
-plt.show() """
+plt.show()
 
 # exo Titanic avec model Selection
 
@@ -322,7 +361,9 @@ titanic = sns.load_dataset("titanic")
 
 titanic = titanic[["survived", "pclass", "sex", "age"]]
 titanic.dropna(axis=0, inplace=True)
-titanic.loc[:, "sex"] = titanic["sex"].replace(["male", "female"], [0, 1])
+titanic.loc[:, "sex"] = titanic["sex"].replace(["male", "female"], [0, 1]).astype(int)
+
+
 print(titanic.head())
 
 from sklearn.neighbors import KNeighborsClassifier
