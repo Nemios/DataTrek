@@ -83,3 +83,71 @@ print(encoder.fit_transform(X))
 ###############################################################
 # sklearn.preprocessing pour 2. Normalisation
 ###############################################################
+# Normalisation MinMax, transformation de chaque var pour que val soit compris entre 0 et 1
+# formule : Xscaled = (X-Xmin)/(Xmax-Xmin)
+from sklearn.preprocessing import MinMaxScaler
+
+X = np.array([[70], [80], [120]])
+scaler = MinMaxScaler()
+print(scaler.fit_transform(X))
+
+# ex avec iris
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+X = iris.data
+
+X_minmax = MinMaxScaler().fit_transform(X)
+
+plt.figure()
+plt.scatter(X[:, 2], X[:, 3], label="Original")
+plt.scatter(X_minmax[:, 2], X_minmax[:, 3], label="X_minmax")
+plt.title("dataset Iris Normalisation MinMax")
+plt.legend()
+plt.show()
+
+# Standardisation : transformation où toutes les var ont moyenne=0 et écart-type=1
+# formule : Xscaled = (X-µ)/sigma
+from sklearn.preprocessing import StandardScaler
+
+X = np.array([[70], [80], [120]])
+scaler = StandardScaler()
+print(scaler.fit_transform(X))
+
+# ex avec iris
+X = iris.data
+X_stdscl = StandardScaler().fit_transform(X)
+
+plt.figure()
+plt.scatter(X[:, 2], X[:, 3], label="Original")
+plt.scatter(X_minmax[:, 2], X_minmax[:, 3], label="X_minmax")
+plt.scatter(X_stdscl[:, 2], X_stdscl[:, 3], label="X_stdscl")
+plt.title("dataset Iris Normalisation MinMax + Standardisation")
+plt.legend()
+plt.show()
+
+# ATTENTION : ces deux techniques sont sensibles aux outliers
+# SOLUTION : si outliers => RobustScaler
+# Robust Scaler : soustraction non plus avec la moyenne mais avec la médiane qui est moins sensible aux outliers
+# formule : Xscaled = (X-mediane)/IQR avec IQR l'intervalle entre le 1er et le 3e quartile
+X = iris.data
+# on ajoute des outliers
+outliers = np.full((10, 4), 100) + np.random.randn(10, 4)
+X = np.vstack((X, outliers))
+X_minmax = MinMaxScaler().fit_transform(X)
+X_stdscl = StandardScaler().fit_transform(X)
+
+from sklearn.preprocessing import RobustScaler
+
+X_robustscl = RobustScaler().fit_transform(X)
+
+plt.figure()
+plt.scatter(X[:, 2], X[:, 3], label="Original")
+plt.scatter(X_minmax[:, 2], X_minmax[:, 3], label="X_minmax")
+plt.scatter(X_stdscl[:, 2], X_stdscl[:, 3], label="X_stdscl")
+plt.scatter(X_robustscl[:, 2], X_robustscl[:, 3], label="X_robustscl")
+plt.title(
+    "dataset Iris outliers Normalisation MinMax + Standardisation + Robust_Scaler"
+)
+plt.legend()
+plt.show()
