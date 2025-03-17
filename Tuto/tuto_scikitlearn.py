@@ -31,7 +31,7 @@ os.environ["LOKY_MAX_CPU_COUNT"] = str(
 
 # https://scikit-learn.org/stable/
 
-# SKLearn = modèles déjà programmés en tant que classes orientés objet = estimateurs
+# SKLearn => modèles déjà programmés en tant que classes orientés objet = estimateurs
 # Ecriture : model = LinearRegression(....) (objet = Constructeur(Hyperparamètres))
 # Exemple descente de Gradient : model = SGDRegressor(eta0=0.3) #Learning_rate=0.3
 # Exemple Random Forest : model = RandomForestClassifier(n_estimatores=100) #nb arbes =100
