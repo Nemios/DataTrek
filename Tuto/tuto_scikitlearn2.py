@@ -151,3 +151,40 @@ plt.title(
 )
 plt.legend()
 plt.show()
+
+###############################################################
+# sklearn.preprocessing PolynomialFeatures
+###############################################################
+# Feature Engineering = créer des var polynomiales à partir de var existantes
+# => modeles de ML plus riches et developpés
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+# exemple : regression lineaire ax + b devient en polynomiale ax^2 + bx + c
+X = np.linspace(0, 4, 100).reshape((100, 1))
+y = X**2 + 5 * np.cos(X) + np.random.randn(100, 1)
+
+plt.figure()
+plt.scatter(X, y)
+
+model = LinearRegression().fit(X, y)
+y_pred = model.predict(X)
+
+plt.plot(X, y_pred, c="r", lw=3)
+plt.show()
+
+X_poly = PolynomialFeatures(3).fit_transform(X)
+model = LinearRegression().fit(X_poly, y)
+y_pred = model.predict(X_poly)
+plt.figure()
+plt.scatter(X, y)
+plt.plot(X, y_pred, c="r", lw=3)
+plt.show()
+
+# ATTENTION à bien normaliser données après avoir utilisé PolynomialFeatures
+
+###############################################################
+# sklearn.preprocessing Discrétisation : découper var continue en plusieurs parties
+###############################################################
+# Binarizer(threshold=n) permet de mettre toutes les var en dessous de n en 0 et les autres en 1
+# KBinsDiscretizer(n_bins=n) idem mais en plus que 2 catégories
