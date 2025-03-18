@@ -188,3 +188,86 @@ plt.show()
 ###############################################################
 # Binarizer(threshold=n) permet de mettre toutes les var en dessous de n en 0 et les autres en 1
 # KBinsDiscretizer(n_bins=n) idem mais en plus que 2 catégories
+
+###############################################################
+# sklearn pipeline
+###############################################################
+# Transformer Estimator
+
+# Xtrain => Transformer (.fit_transform(Xtrain)) => Estimator (.fit(Xtraintransformed,ytrain))
+# Xtest => Transformer (.transform(Xtest)) => Estimator (.predict(Xtesttransformed))
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import SGDClassifier  # SGD = Stochastic gradient descent
+
+X = iris.data
+y = iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Transformer
+scaler = StandardScaler()
+X_train_transformed = scaler.fit_transform(X_train)
+
+# Estimator
+model = SGDClassifier(random_state=0)
+model.fit(X_train_transformed, y_train)
+
+# Test
+X_test_transformed = scaler.transform(X_test)
+model.predict(X_test_transformed)
+
+# Pipeline = Transformer + Estimator ie un Composite Estimator
+# ie un estimateur composé de plusieurs éléments
+# quand on utilise la méthode .fit du Composite Estimator, on utilise en une seule ligne
+# les méthodes .fit de chaque élément
+# idem pour les autres méthodes
+
+# même code mais sous forme de Pipeline
+from sklearn.pipeline import make_pipeline
+
+model = make_pipeline(StandardScaler(), SGDClassifier())
+model.fit(X_train, y_train)
+model.predict(X_test)
+# avantage Pipeline : permet de faire de la cross validation sur tous les éléments en mm temps
+
+# Pipeline et GridSearchCV pour trouver les meilleurs parametres de la pipeline
+# grid = GridSearchCV(pipeline, params, cv)
+# params = {
+# <Composant>__<parametre>:[]
+# } dictionnaire des parametres de la pipeline
+# grid.fit(X_train, y_train)
+# grid.best_estimator
+
+from sklearn.model_selection import GridSearchCV
+
+model = make_pipeline(
+    PolynomialFeatures(), StandardScaler(), SGDClassifier(random_state=0)
+)
+
+print(model)
+
+# dictionnaire de parametres
+params = {
+    "polynomialfeatures__degree": [2, 3, 4],
+    "sgdclassifier__penalty": ["l1", "l2"],
+}
+
+grid = GridSearchCV(
+    model, param_grid=params, cv=4
+)  # cv = nb splits pour crossvalidation
+
+grid.fit(X_train, y_train)
+
+print(grid.best_params_)
+print(grid.score(X_test, y_test))
+
+# Comparaison avec model sans preprocessing
+
+X = iris.data
+y = iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+model = SGDClassifier(random_state=0)
+model.fit(X_train, y_train)
+print(model.score(X_test, y_test))
