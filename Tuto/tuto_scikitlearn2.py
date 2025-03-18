@@ -1,5 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import (
+    LabelEncoder,
+    OrdinalEncoder,
+    OneHotEncoder,
+    StandardScaler,
+    MinMaxScaler,
+    LabelBinarizer,
+    MultiLabelBinarizer,
+    RobustScaler,
+    PolynomialFeatures,
+)
+from sklearn.linear_model import (
+    LinearRegression,
+    SGDClassifier,
+)  # SGD = Stochastic gradient descent
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.pipeline import make_pipeline
+
 
 ###############################################################
 # 22/30 SKLearn : PRE-PROCESSING + PIPELINE
@@ -31,9 +51,7 @@ import matplotlib.pyplot as plt
 # OrdinalEncoder()
 # méthode inverse_transform permet de décoder les données
 
-from sklearn.preprocessing import LabelEncoder
-
-y = np.array(["chat", "chien", "chat", "oiseau"])
+""" y = np.array(["chat", "chien", "chat", "oiseau"])
 
 encoder = LabelEncoder()
 encoder.fit(y)
@@ -49,7 +67,6 @@ print(encoder.fit_transform(y))
 print(encoder.inverse_transform(np.array([0, 0, 2, 2, 1])))
 
 # si plusieurs colonnes, on utilise OrdinalEncoder
-from sklearn.preprocessing import OrdinalEncoder
 
 X = np.array(
     [["chat", "poils"], ["chien", "poils"], ["chat", "poils"], ["oiseau", "plumes"]]
@@ -67,7 +84,6 @@ print(encoder.fit_transform(X))
 # LabelBinarizer()
 # MultiLabelBinarizer()
 # OneHotEncoder()
-from sklearn.preprocessing import LabelBinarizer, MultiLabelBinarizer, OneHotEncoder
 
 encoder = LabelBinarizer()
 print(encoder.fit_transform(y))
@@ -85,14 +101,12 @@ print(encoder.fit_transform(X))
 ###############################################################
 # Normalisation MinMax, transformation de chaque var pour que val soit compris entre 0 et 1
 # formule : Xscaled = (X-Xmin)/(Xmax-Xmin)
-from sklearn.preprocessing import MinMaxScaler
 
 X = np.array([[70], [80], [120]])
 scaler = MinMaxScaler()
 print(scaler.fit_transform(X))
 
 # ex avec iris
-from sklearn.datasets import load_iris
 
 iris = load_iris()
 X = iris.data
@@ -108,7 +122,6 @@ plt.show()
 
 # Standardisation : transformation où toutes les var ont moyenne=0 et écart-type=1
 # formule : Xscaled = (X-µ)/sigma
-from sklearn.preprocessing import StandardScaler
 
 X = np.array([[70], [80], [120]])
 scaler = StandardScaler()
@@ -137,8 +150,6 @@ X = np.vstack((X, outliers))
 X_minmax = MinMaxScaler().fit_transform(X)
 X_stdscl = StandardScaler().fit_transform(X)
 
-from sklearn.preprocessing import RobustScaler
-
 X_robustscl = RobustScaler().fit_transform(X)
 
 plt.figure()
@@ -157,8 +168,6 @@ plt.show()
 ###############################################################
 # Feature Engineering = créer des var polynomiales à partir de var existantes
 # => modeles de ML plus riches et developpés
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
 
 # exemple : regression lineaire ax + b devient en polynomiale ax^2 + bx + c
 X = np.linspace(0, 4, 100).reshape((100, 1))
@@ -197,9 +206,6 @@ plt.show()
 # Xtrain => Transformer (.fit_transform(Xtrain)) => Estimator (.fit(Xtraintransformed,ytrain))
 # Xtest => Transformer (.transform(Xtest)) => Estimator (.predict(Xtesttransformed))
 
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import SGDClassifier  # SGD = Stochastic gradient descent
-
 X = iris.data
 y = iris.target
 
@@ -224,7 +230,7 @@ model.predict(X_test_transformed)
 # idem pour les autres méthodes
 
 # même code mais sous forme de Pipeline
-from sklearn.pipeline import make_pipeline
+
 
 model = make_pipeline(StandardScaler(), SGDClassifier())
 model.fit(X_train, y_train)
@@ -239,7 +245,6 @@ model.predict(X_test)
 # grid.fit(X_train, y_train)
 # grid.best_estimator
 
-from sklearn.model_selection import GridSearchCV
 
 model = make_pipeline(
     PolynomialFeatures(), StandardScaler(), SGDClassifier(random_state=0)
@@ -270,4 +275,45 @@ y = iris.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 model = SGDClassifier(random_state=0)
 model.fit(X_train, y_train)
-print(model.score(X_test, y_test))
+print(model.score(X_test, y_test)) """
+
+###############################################################
+# sklearn Pipeline Avancée : meilleur model pour dataset hétérogène
+###############################################################
+
+titanic = sns.load_dataset("titanic")
+print(titanic.head())
+y = titanic.loc[:, "survived"]
+X = titanic.drop("survived", axis=1)
+
+# on a un dataset hétérogène (var continues, discretes, ...) donc on ne peut pas
+# utiliser l'expression : model = make_pipeline(StandardScaler(),...)
+# car StandardScaler ne peut pas traiter tous les types de var (discretes, ...)
+# donc on va trier les colonnes :
+from sklearn.compose import make_column_transformer
+
+# transformer sur colonnes
+transformer = make_column_transformer((StandardScaler(), ["age", "fare"]))
+transformer.fit_transform(X)  # ne transformer que les colonnes données précédemment
+
+# utilisation avec pipeline
+model = make_pipeline(transformer, SGDClassifier())
+
+
+# de maniere generale, on regroupe les var en deux groupes : catégorielle ou numérique
+numerical_features = ["pclass", "age", "fare"]
+categorical_features = ["sex", "deck", "alone"]
+from sklearn.impute import SimpleImputer  # enleve valeurs manquantes
+
+numerical_pipeline = make_pipeline(SimpleImputer(), StandardScaler())
+categorical_pipeline = make_pipeline(
+    SimpleImputer(strategy="most_frequent"), OneHotEncoder()
+)
+# SimpleImputer(strategy="most_frequent") remplace les missing values par les most frequent values
+preprocessor = make_column_transformer(
+    (numerical_pipeline, numerical_features),
+    (categorical_pipeline, categorical_features),
+)
+
+model = make_pipeline(preprocessor, SGDClassifier())
+model.fit(X, y)
