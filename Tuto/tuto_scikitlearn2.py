@@ -7,6 +7,7 @@ from sklearn.preprocessing import (
     OneHotEncoder,
     StandardScaler,
     MinMaxScaler,
+    Binarizer,
     LabelBinarizer,
     MultiLabelBinarizer,
     RobustScaler,
@@ -275,7 +276,7 @@ y = iris.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 model = SGDClassifier(random_state=0)
 model.fit(X_train, y_train)
-print(model.score(X_test, y_test)) """
+print(model.score(X_test, y_test))
 
 ###############################################################
 # sklearn Pipeline Avancée : meilleur model pour dataset hétérogène
@@ -317,3 +318,88 @@ preprocessor = make_column_transformer(
 
 model = make_pipeline(preprocessor, SGDClassifier())
 model.fit(X, y)
+
+# pour sélectionner les variables, on peut aussi utiliser make_column_selector
+from sklearn.compose import make_column_selector
+
+numerical_features = make_column_selector(dtype_include=np.number)
+# toutes les var numeriques sont sélectionnées
+categorical_features = make_column_selector(dtype_exclude=np.number)
+# toutes les var non numeriques ie catégorielles sont sélectionnées
+numerical_pipeline = make_pipeline(SimpleImputer(), StandardScaler())
+categorical_pipeline = make_pipeline(
+    SimpleImputer(strategy="most_frequent"), OneHotEncoder()
+)
+
+preprocessor = make_column_transformer(
+    (numerical_pipeline, numerical_features),
+    (categorical_pipeline, categorical_features),
+)
+
+model = make_pipeline(preprocessor, SGDClassifier())
+model.fit(X, y)
+
+# Feature Union :  pipelines en parallèle
+numerical_features = X.loc[:, ["age", "fare"]]
+from sklearn.pipeline import make_union
+
+pipeline = make_union(StandardScaler(), Binarizer())
+
+pipeline.fit_transform(numerical_features)
+"""
+
+###############################################################
+# sklearn Imputer : nettoyage de données
+###############################################################
+
+# SimpleImputer
+from sklearn.impute import SimpleImputer
+
+X = np.array([[10, 3], [0, 4], [5, 3], [np.nan, 3]])
+
+imputer = SimpleImputer(missing_values=np.nan, strategy="mean")
+# strategy : "mean", "median", "most_frequent", "constant" avec fill_value = constant
+print(imputer.fit_transform(X))
+
+# KNNImputer
+from sklearn.impute import KNNImputer
+
+X = np.array([[1, 100], [2, 30], [3, 15], [np.nan, 20]])
+imputer = KNNImputer(n_neighbors=1)
+print(imputer.fit_transform(X))
+
+# MissingImputer
+from sklearn.impute import MissingIndicator
+
+X = np.array([[1, 100], [2, 30], [3, 15], [np.nan, np.nan]])
+print(MissingIndicator().fit_transform(X))
+
+# très utile dans certains cas, exemple :
+# imaginons qu'une personne du titanic est nan pour la classe car c'est un matelot
+# on pourrait alors créer une var "membre équipage" pour ne pas pas perdre cette info
+from sklearn.pipeline import make_union
+
+pipeline = make_union(
+    SimpleImputer(strategy="constant", fill_value=-99), MissingIndicator()
+)
+print(pipeline.fit_transform(X))
+
+# ATTENTION : plus intelligent que juste remove nan avec pandas
+
+# exemple application Transformers
+titanic = sns.load_dataset("titanic")
+print(titanic.head())
+X = titanic.loc[:, ["pclass", "age"]]
+y = titanic.loc[:, "survived"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+model = make_pipeline(KNNImputer(), SGDClassifier())
+
+params = {"knnimputer__n_neighbors": [1, 2, 3, 4]}
+
+grid = GridSearchCV(model, param_grid=params, cv=5)
+
+grid.fit(X_train, y_train)
+
+print(grid.best_params_)
