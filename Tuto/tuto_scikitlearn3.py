@@ -5,6 +5,8 @@ from sklearn.feature_selection import (
     SelectKBest,
     chi2,
     SelectFromModel,
+    RFE,
+    RFECV,
 )
 from sklearn.linear_model import SGDClassifier
 
@@ -64,4 +66,12 @@ print(selector.estimator_.coef_)
 # la matrice des coef permet de passer de X à y donc taille 3x4 ou 4x3 si on a utilisé une transposée
 
 ###############################################################
-# RFE + RFECV : estimateurs récursifs
+# RFE + RFECV : estimateurs récursifs (recursive feature elimination)
+# on entraine estimateur sur dataset comme avant pour eliminer feature les moins utiles, puis on repete
+
+selector = RFECV(SGDClassifier(), step=1, min_features_to_select=2, cv=4)
+# step = nb feature eliminée à chaque itération
+
+selector.fit(X, y)
+print(selector.ranking_)
+print(selector.cv_results_)
