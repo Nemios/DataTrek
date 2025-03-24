@@ -52,7 +52,7 @@ from sklearn.pipeline import make_pipeline
 # OrdinalEncoder()
 # méthode inverse_transform permet de décoder les données
 
-""" y = np.array(["chat", "chien", "chat", "oiseau"])
+y = np.array(["chat", "chien", "chat", "oiseau"])
 
 encoder = LabelEncoder()
 encoder.fit(y)
@@ -346,7 +346,7 @@ from sklearn.pipeline import make_union
 pipeline = make_union(StandardScaler(), Binarizer())
 
 pipeline.fit_transform(numerical_features)
-"""
+
 
 ###############################################################
 # sklearn Imputer : nettoyage de données

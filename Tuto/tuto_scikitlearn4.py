@@ -107,7 +107,7 @@ plt.show()
 
 model = IsolationForest(random_state=0, contamination=0.02)
 model.fit(X)
-print(model.predict(X))  # tableau de 1 (non anomalie) et -1 (anomalie)
+print(model.predict(X))  # tableau deF 1 (non anomalie) et -1 (anomalie)
 
 # on filtre avec boolean indexing
 outliers = model.predict(X) == -1
