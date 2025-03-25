@@ -100,7 +100,7 @@ print(encoder.fit_transform(X))
 ###############################################################
 # sklearn.preprocessing pour 2. Normalisation
 ###############################################################
-# Normalisation MinMax, transformation de chaque var pour que val soit compris entre 0 et 1
+# Normalisation MinMax, transformation de chaque var pour que val soit comprise entre 0 et 1
 # formule : Xscaled = (X-Xmin)/(Xmax-Xmin)
 
 X = np.array([[70], [80], [120]])
@@ -259,9 +259,8 @@ params = {
     "sgdclassifier__penalty": ["l1", "l2"],
 }
 
-grid = GridSearchCV(
-    model, param_grid=params, cv=4
-)  # cv = nb splits pour crossvalidation
+grid = GridSearchCV(model, param_grid=params, cv=4)
+# cv = nb splits pour crossvalidation
 
 grid.fit(X_train, y_train)
 
