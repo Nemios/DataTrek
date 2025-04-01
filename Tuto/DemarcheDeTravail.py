@@ -25,6 +25,10 @@
 # - Feature Selection
 # - Feature Engineering
 # - Feature Scaling
+# METHODE :
+# 1. Mettre les données dans un format propice au ML : Train / Test => Encodage => Nettoyage NaN
+# 2. Améliorer la performance du modèle : Feature Selection, Feature Engineering, Feature Scaling, Suppression des Outliers
+
 
 # 4. Modelling (NON-EXHAUSTIF)
 # - Définir une fonction d'évaluation
